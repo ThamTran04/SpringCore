@@ -1,0 +1,58 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:c="http://www.springframework.org/schema/c">
+
+	<bean id="hello_id" class="spring.core.Hello" scope="singleton"
+		primary="false">
+	</bean>
+
+	<bean id="girl1" class="spring.core.Girl" autowire="no"
+		scope="prototype">
+		<constructor-arg ref="hello_id" />
+	</bean>
+
+	<bean id="girl2" class="spring.core.Girl"
+		c:conversation1-ref="hello_id" scope="prototype" />
+	<!-- "conversation1" come from constructor of Girl class -->
+
+	<bean id="girl3" class="spring.core.Girl">
+		<property name="setting" ref="hello_id" />
+		<!-- "setting" come from setter method in Girl class "setSetting" generated 
+			by lombok -->
+	</bean>
+
+	<bean id="girl4" class="spring.core.Girl" autowire="no"
+		p:conversation2-ref="hello_id" />
+	<!-- "conversation2" come from setter method in Girl class "setConversation2" -->
+
+	<bean id="setting" class="spring.core.Goodbye">
+	</bean>
+
+	<bean id="girl5" class="spring.core.Girl" autowire="byName" />
+	<!-- bean girl5 use bean "setting". Neu k co bean setting trong Spring container 
+		thi se gap loi null pointer exception -->
+
+	<bean id="girl6" class="spring.core.Girl" autowire="byType" />
+	<!-- girl6 use only one of all theses 3 beans "hello_id, setting, conversation1". 
+		If in Spring container contain 3 theses beans at the same time (more than 
+		one bean of the same type), it will bloc the running program. To solve this 
+		problem, it should use primary property (https://livebook.manning.com/book/spring-in-action-third-edition/chapter-3/37) -->
+
+	<bean id="conversation1" class="spring.core.Hello" primary="true">
+	</bean>
+
+	<bean id="girl7" class="spring.core.Girl" autowire="constructor" />
+	<!-- neu chi co 1 bean type conversation trong Spring thi no inject luon 
+		bean day. Con neu co tu 2 bean tro len thi no se k inject bean nao ca va 
+		se dan den null pointer exception. Voi 2 bean tro len thi neu muon inject 
+		bean nao thi phai dat ten cua bean day trung voi tren cua bien trong constructor. 
+		o vd nay no se sd bean "conversation1". Or 1 trong cac bean de conversation type phai dat primary-->
+	<!-- su khac nhau giua bean girl7 voi bean girl6 là neu trong spring ton 
+		tai nhieu hon 1 bean thi girl6 se bloc ca chuong trinh luon. con girl7 neu 
+		gay ra loi thi se la loi khi nao chuong trinh goi den no null pointer exception -->
+
+	<!-- <bean id="girl8" class="spring.core.Girl" autowire="autodetect" /> -->
+</beans>
